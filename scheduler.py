@@ -39,10 +39,23 @@ with open(secure_dir_no_git+'/calendar_id.txt') as f:
 calendarID = str(calendarID[0]).replace('\n', "")		#ID of the google calendar to write the events to
 
 def main(argv):
-  
+ 
+  bloggers_data = None 
   with open(xrds_dir_no_git+'/bloggers.txt') as bloggers: 	#file to get the current bloggers from
 	bloggers_data = bloggers.readlines()
+  i = 0
+  emails_data = bloggers_data[:]
+  for blogger in bloggers_data:
+	bloggers_data[i] = blogger.split(",")[0]
+	#print(bloggers_data[i])
+	emails_data[i] = blogger.split(",")[1]
+  	i+=1
+  #print bloggers_data
+  #print emails_data
+	
+
   print("OK: Bloggers are -> ", bloggers_data)
+  print("OK: Emails are -> ", emails_data)
   log = open(xrds_dir_no_git+"/schedule.txt", 'w') 		#file to output schedule to
 
   storage = file.Storage(secure_dir_no_git+'/sample.dat')
@@ -99,6 +112,9 @@ def main(argv):
 			i+=1
 			s+=1
 			week+=1
+
+			email="herrlopes@gmail.com"
+
     			event = {
    				'summary': '[XRDS] Blogging Assigment for ' + name,
    				'location': "XRDS Blog at xrds.acm.org/blog/",
@@ -111,11 +127,33 @@ def main(argv):
 					'dateTime': event_end,
 					'timeZone': "America/Los_Angeles"
  			   	},
+				#attendees[].email <- get attendeed email here
+				"attendees": [
+    				  {
+      					"email": "anewkindofblue@gmail.com",
+    				  },
+				  {
+      					"email": email,
+    				  }
+  				],
+				 "defaultReminders": [
+   				  {
+     					"method": "email",
+     					"minutes": 10
+   				  },
+   				  {
+     					"method": "popup",
+     					"minutes": 10
+   				  }
+ 				],
+				'reminders': 
+				  {
+  					"useDefault": "True"
+ 				  },
     			}
 
-    			created_event = service.events().insert(calendarId=calendarID, body=event).execute()
-    			print created_event['id']
-
+    			#created_event = service.events().insert(calendarId=calendarID, body=event, sendNotifications="True").execute()
+    			#print created_event['id']
 	else:
 		print("SORRY: Please next time specify month using a number")
     
