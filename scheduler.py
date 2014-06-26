@@ -19,7 +19,6 @@ xrds_dir_no_git = "xrds-data"
 newline = '\n'
 
 days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-weeks = [1, 9, 16, 23]
 months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
 today=time.localtime().tm_wday
 day=time.localtime().tm_mday
