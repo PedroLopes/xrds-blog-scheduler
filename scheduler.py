@@ -60,42 +60,41 @@ def main(argv):
     if start_month_choice.isdigit() and start_month_choice != "0" and int(start_month_choice)<13:
 	start_month = months[int(start_month_choice)-1]
         print("OK: Starting month will be " + start_month)
-	num_month_choice = raw_input("How many months to output?")
-        if num_month_choice.isdigit():
-        	num_month = int(num_month_choice)
-               	print("OK: Will calculate for  " + str(num_month) + " months")
-		if ((num_month*4)%len(bloggers_data) != 0):
-               		print("SORRY: needed to schedule " + str((num_month*4)%len(bloggers_data)) + "more bloggers so you can have a full round robin with only " + str(num_month) + " months.")
-			print("SORRY: Will continue bue if you want full round robin run again with different month setting")
+	num_weeks_choice = raw_input("How many weeks to output?")
+        if num_weeks_choice.isdigit():
+        	num_weeks = int(num_weeks_choice)
+               	print("OK: Will calculate for  " + str(num_weeks) + " weeks")
+		if ((num_weeks)%len(bloggers_data) != 0):
+               		print("SORRY: needed to schedule " + str((num_weeks)%len(bloggers_data)) + "more bloggers so you can have a full round robin with only " + str(num_weeks) + " weeks.")
+			print("SORRY: Will continue but if you want full round robin run again with different month setting")
 		s=0
 		start_mon = int(start_month_choice)
 		start_day = 1
+        	event_start_date = datetime.date(datetime.datetime.now().year,start_mon,start_day)
+        	start_day_o = event_start_date.toordinal() 
 		i=0
 		week = 1
-		log.write("\t\t"+ months[start_mon-1] + newline)
-		print("\t\t"+ months[start_mon-1] + newline)
-		while (s < num_month * 4):
+		#log.write("\t\t"+ months[start_mon-1] + newline)
+		#print("\t\t"+ months[start_mon-1] + newline)
+		while (s < num_weeks):
 			if (i >= len(bloggers_data)):
 				i = 0
-			if (week > 4):
-				week = 1
-				start_mon+=1
-				log.write("\t\t"+ months[start_mon-1] + newline)
-				print("\t\t"+ months[start_mon-1] + newline)
+			#if (week > 4):
+			#	week = 1
+			#	start_mon+=1
+				#log.write("\t\t"+ months[start_mon-1] + newline)
+				#print("\t\t"+ months[start_mon-1] + newline)
 			name = str(bloggers_data[i]).replace('\n', '')
-			log.write(name+"\t\t"+ "week " + str(week) + newline)
-			print(name+"\t\t"+ "week " + str(week) + newline)
+			#log.write(name+"\t\t"+ "week " + str(week) + newline)
+			#print(name+"\t\t"+ "week " + str(week) + newline)
 			event_summary=bloggers_data[i]	
         		event_start_time = datetime.time(int("18"), int("00"))
-			#advance week -> next_day = start_day  week
-        		event_start_date = datetime.date(datetime.datetime.now().year,start_mon,weeks[week-1])
-			start_counts_date = event_start_date
+        		event_start_date = datetime.date.fromordinal(start_day_o)
+			#start_counts_date = event_start_date
 
-			print(start_counts_date.toordinal())
-			print week
-			start_day = start_counts_date.toordinal()  + ((week-1) * 7)
-			print start_day
-			print (datetime.date.fromordinal(start_day))
+			if (week-1 > 0):
+				start_day_o = start_day_o  + 7 - (datetime.date.fromordinal(start_day_o)).weekday()
+			print (datetime.date.fromordinal(start_day_o))
  
         		event_start = datetime.datetime.combine(event_start_date, event_start_time)
         		event_start = rfc3339(event_start)
