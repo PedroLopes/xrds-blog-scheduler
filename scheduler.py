@@ -69,6 +69,7 @@ def main(argv):
 			print("SORRY: Will continue bue if you want full round robin run again with different month setting")
 		s=0
 		start_mon = int(start_month_choice)
+		start_day = 1
 		i=0
 		week = 1
 		log.write("\t\t"+ months[start_mon-1] + newline)
@@ -86,7 +87,16 @@ def main(argv):
 			print(name+"\t\t"+ "week " + str(week) + newline)
 			event_summary=bloggers_data[i]	
         		event_start_time = datetime.time(int("18"), int("00"))
+			#advance week -> next_day = start_day  week
         		event_start_date = datetime.date(datetime.datetime.now().year,start_mon,weeks[week-1])
+			start_counts_date = event_start_date
+
+			print(start_counts_date.toordinal())
+			print week
+			start_day = start_counts_date.toordinal()  + ((week-1) * 7)
+			print start_day
+			print (datetime.date.fromordinal(start_day))
+ 
         		event_start = datetime.datetime.combine(event_start_date, event_start_time)
         		event_start = rfc3339(event_start)
         		event_end_time = datetime.time(int("20"), int("00"))
@@ -109,8 +119,8 @@ def main(argv):
  			   	},
     			}
 
-    			created_event = service.events().insert(calendarId=calendarID, body=event).execute()
-    			print created_event['id']
+    			#created_event = service.events().insert(calendarId=calendarID, body=event).execute()
+    			#print created_event['id']
 
 	else:
 		print("SORRY: Please next time specify month using a number")
