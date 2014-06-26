@@ -79,23 +79,18 @@ def main(argv):
 		while (s < num_weeks):
 			if (i >= len(bloggers_data)):
 				i = 0
-			#if (week > 4):
-			#	week = 1
-			#	start_mon+=1
-				#log.write("\t\t"+ months[start_mon-1] + newline)
-				#print("\t\t"+ months[start_mon-1] + newline)
 			name = str(bloggers_data[i]).replace('\n', '')
 			#log.write(name+"\t\t"+ "week " + str(week) + newline)
 			#print(name+"\t\t"+ "week " + str(week) + newline)
 			event_summary=bloggers_data[i]	
-        		event_start_time = datetime.time(int("18"), int("00"))
-        		event_start_date = datetime.date.fromordinal(start_day_o)
 			#start_counts_date = event_start_date
 
 			if (week-1 > 0):
 				start_day_o = start_day_o  + 7 - (datetime.date.fromordinal(start_day_o)).weekday()
 			print (datetime.date.fromordinal(start_day_o))
- 
+        		
+			event_start_time = datetime.time(int("18"), int("00"))
+        		event_start_date = datetime.date.fromordinal(start_day_o)
         		event_start = datetime.datetime.combine(event_start_date, event_start_time)
         		event_start = rfc3339(event_start)
         		event_end_time = datetime.time(int("20"), int("00"))
@@ -118,8 +113,8 @@ def main(argv):
  			   	},
     			}
 
-    			#created_event = service.events().insert(calendarId=calendarID, body=event).execute()
-    			#print created_event['id']
+    			created_event = service.events().insert(calendarId=calendarID, body=event).execute()
+    			print created_event['id']
 
 	else:
 		print("SORRY: Please next time specify month using a number")
