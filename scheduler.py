@@ -19,6 +19,7 @@ xrds_dir_no_git = "xrds-data"
 newline = '\n'
 
 days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+weeks = [1, 9, 16, 23]
 months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
 today=time.localtime().tm_wday
 day=time.localtime().tm_mday
@@ -48,9 +49,9 @@ def main(argv):
   credentials = storage.get()
   if credentials is None or credentials.invalid:
     credentials = tools.run_flow(FLOW, storage, flags)
-  #http = httplib2.Http()
-  #http = credentials.authorize(http)
-  #service = discovery.build('calendar', 'v3', http=http)
+  http = httplib2.Http()
+  http = credentials.authorize(http)
+  service = discovery.build('calendar', 'v3', http=http)
 
   try:
     print("OK: Probing for google / internet . . . ")
@@ -84,40 +85,32 @@ def main(argv):
 			log.write(name+"\t\t"+ "week " + str(week) + newline)
 			print(name+"\t\t"+ "week " + str(week) + newline)
 			event_summary=bloggers_data[i]	
-        #event_start_time = datetime.time(int(d1[0]), int(d1[1]))
-        #event_start_date = datetime.date(int(date_parsed[0]), int(date_parsed[1]), int(date_parsed[2]))
-        #event_start = datetime.datetime.combine(event_start_date, event_start_time)
-        #event_start = rfc3339(event_start)
-        #event_end = event_start
-					#1 9 16 23
+        		event_start_time = datetime.time(int("18"), int("00"))
+        		event_start_date = datetime.date(datetime.datetime.now().year,start_mon,weeks[week-1])
+        		event_start = datetime.datetime.combine(event_start_date, event_start_time)
+        		event_start = rfc3339(event_start)
+        		event_end_time = datetime.time(int("20"), int("00"))
+        		event_end = datetime.datetime.combine(event_start_date, event_end_time)
+        		event_end = rfc3339(event_end)
 			i+=1
 			s+=1
 			week+=1
-
-    
-    #print "summary", event_summary
-    #print "where", event_address   
-    #print "start", event_start
-    #print "end", event_end 
-    #print "--------------"
-
     			event = {
-   				'summary': '[XRDS] Blogging Assigment :)',
+   				'summary': '[XRDS] Blogging Assigment for ' + name,
    				'location': "XRDS Blog at xrds.acm.org/blog/",
 				'description': "Contribute your coolest idea to the blog: (1) write the draft (2) send for review (3) review and post it (4) help us advertise it!",
    				'start': {
-   					'dateTime': "2014-08-07",
+   					'dateTime': event_start,
 					'timeZone': "America/Los_Angeles"
     				},
-    	#'end': {
-	#	'dateTime': event_end,
-#		'timeZone': "Europe/Berlin"
- #   	},
-    				}
+    				'end': {
+					'dateTime': event_end,
+					'timeZone': "America/Los_Angeles"
+ 			   	},
+    			}
 
-    					#created_event = service.events().insert(calendarId=calendarID, body=event).execute()
-    					#print created_event['id']
-	#break	
+    			created_event = service.events().insert(calendarId=calendarID, body=event).execute()
+    			print created_event['id']
 
 	else:
 		print("SORRY: Please next time specify month using a number")
