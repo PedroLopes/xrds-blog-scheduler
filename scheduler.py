@@ -16,6 +16,7 @@ from rfc3339 import rfc3339
 
 secure_dir_no_git = "not-git-tracked-secure"
 xrds_dir_no_git = "xrds-data"
+newline = '\n'
 
 days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
@@ -40,73 +41,84 @@ def main(argv):
   
   with open(xrds_dir_no_git+'/bloggers.txt') as bloggers: 	#file to get the current bloggers from
 	bloggers_data = bloggers.readlines()
-  print("OK: Bloggers are -> " + bloggers_data)
+  print("OK: Bloggers are -> ", bloggers_data)
   log = open(xrds_dir_no_git+"/schedule.txt", 'w') 		#file to output schedule to
 
   storage = file.Storage(secure_dir_no_git+'/sample.dat')
   credentials = storage.get()
   if credentials is None or credentials.invalid:
     credentials = tools.run_flow(FLOW, storage, flags)
-  http = httplib2.Http()
-  http = credentials.authorize(http)
-  service = discovery.build('calendar', 'v3', http=http)
+  #http = httplib2.Http()
+  #http = credentials.authorize(http)
+  #service = discovery.build('calendar', 'v3', http=http)
 
   try:
     print("OK: Probing for google / internet . . . ")
 
-    while True:
-        start_month_choice = raw_input("Which month to start (type number, jan=1, feb=2, ..., dec=12)")
-        if start_month_choice.isdigit() and start_month_choice != "0" and int(start_month_choice)<13:
-		start_month = months[int(start_month_choice)-1]
-                print("OK: Starting month will be " + start_month)
-		num_month_choice = raw_input("How many months to output?")
-        	if num_month_choice.isdigit():
-                		num_month = int(num_month_choice)
-                		print("OK: Will calculate for  " + str(num_month) + " months")
-				print len(bloggers_data)%(num_month*4)
-				#if (len(bloggers_data)%(num_month*4)) != 0:
-                		#	print("SORRY: " + str((len(bloggers_data)%num_month)) + " bloggers are left because with " + num_month + " you cannot do a full round robin")
-				#	print("SORRY: Will continue bue if you want full round robin run again with different month setting")
-			        s=0
-				i=0
-				while (s <= num_month * 4):
-					if (i >= len(bloggers_data)):
-						i = 0
-					log.write(bloggers_data[i])
-					event_summary=bloggers_data[i]	
+    start_month_choice = raw_input("Which month to start (type number, jan=1, feb=2, ..., dec=12)")
+    if start_month_choice.isdigit() and start_month_choice != "0" and int(start_month_choice)<13:
+	start_month = months[int(start_month_choice)-1]
+        print("OK: Starting month will be " + start_month)
+	num_month_choice = raw_input("How many months to output?")
+        if num_month_choice.isdigit():
+        	num_month = int(num_month_choice)
+               	print("OK: Will calculate for  " + str(num_month) + " months")
+		if ((num_month*4)%len(bloggers_data) != 0):
+               		print("SORRY: needed to schedule " + str((num_month*4)%len(bloggers_data)) + "more bloggers so you can have a full round robin with only " + str(num_month) + " months.")
+			print("SORRY: Will continue bue if you want full round robin run again with different month setting")
+		s=0
+		start_mon = int(start_month_choice)
+		i=0
+		week = 1
+		log.write("\t\t"+ months[start_mon-1] + newline)
+		print("\t\t"+ months[start_mon-1] + newline)
+		while (s < num_month * 4):
+			if (i >= len(bloggers_data)):
+				i = 0
+			if (week > 4):
+				week = 1
+				start_mon+=1
+				log.write("\t\t"+ months[start_mon-1] + newline)
+				print("\t\t"+ months[start_mon-1] + newline)
+			name = str(bloggers_data[i]).replace('\n', '')
+			log.write(name+"\t\t"+ "week " + str(week) + newline)
+			print(name+"\t\t"+ "week " + str(week) + newline)
+			event_summary=bloggers_data[i]	
         #event_start_time = datetime.time(int(d1[0]), int(d1[1]))
         #event_start_date = datetime.date(int(date_parsed[0]), int(date_parsed[1]), int(date_parsed[2]))
         #event_start = datetime.datetime.combine(event_start_date, event_start_time)
         #event_start = rfc3339(event_start)
         #event_end = event_start
 					#1 9 16 23
-					i+=1
-					s+=1
+			i+=1
+			s+=1
+			week+=1
 
     
-    #print "--------------"
     #print "summary", event_summary
     #print "where", event_address   
     #print "start", event_start
     #print "end", event_end 
     #print "--------------"
 
-    					event = {
-   						'summary': '[XRDS] Blogging Assigment :)',
-   						'location': "XRDS Blog at xrds.acm.org/blog/",
-						'description': "Contribute your coolest idea to the blog: (1) write the draft (2) send for review (3) review and post it (4) help us advertise it!",
-   						'start': {
-   							'dateTime': "2014-08-07",
-							'timeZone': "America/Los_Angeles"
-    						},
+    			event = {
+   				'summary': '[XRDS] Blogging Assigment :)',
+   				'location': "XRDS Blog at xrds.acm.org/blog/",
+				'description': "Contribute your coolest idea to the blog: (1) write the draft (2) send for review (3) review and post it (4) help us advertise it!",
+   				'start': {
+   					'dateTime': "2014-08-07",
+					'timeZone': "America/Los_Angeles"
+    				},
     	#'end': {
 	#	'dateTime': event_end,
 #		'timeZone': "Europe/Berlin"
  #   	},
-    						}
+    				}
 
-    					created_event = service.events().insert(calendarId=calendarID, body=event).execute()
-    					print created_event['id']
+    					#created_event = service.events().insert(calendarId=calendarID, body=event).execute()
+    					#print created_event['id']
+	#break	
+
 	else:
 		print("SORRY: Please next time specify month using a number")
     
