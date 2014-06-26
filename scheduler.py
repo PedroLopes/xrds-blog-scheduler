@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 # Check README.md and LICENSE for license stuff
 
 import argparse
@@ -47,11 +47,8 @@ def main(argv):
   emails_data = bloggers_data[:]
   for blogger in bloggers_data:
 	bloggers_data[i] = blogger.split(",")[0]
-	#print(bloggers_data[i])
 	emails_data[i] = blogger.split(",")[1]
   	i+=1
-  #print bloggers_data
-  #print emails_data
 	
 
   print("OK: Bloggers are -> ", bloggers_data)
@@ -87,20 +84,17 @@ def main(argv):
         	start_day_o = event_start_date.toordinal() 
 		i=0
 		week = 1
-		#log.write("\t\t"+ months[start_mon-1] + newline)
-		#print("\t\t"+ months[start_mon-1] + newline)
+		log.write("\t\t"+ str(event_start_date) + newline)
 		while (s < num_weeks):
 			if (i >= len(bloggers_data)):
 				i = 0
 			name = str(bloggers_data[i]).replace('\n', '')
-			#log.write(name+"\t\t"+ "week " + str(week) + newline)
-			#print(name+"\t\t"+ "week " + str(week) + newline)
 			event_summary=bloggers_data[i]	
-			#start_counts_date = event_start_date
+			email=str(emails_data[i]).replace('\n', '')
+			#print("DEBUG: sending email to " + name + " which has following address:" + email)
 
 			if (week-1 > 0):
 				start_day_o = start_day_o  + 7 - (datetime.date.fromordinal(start_day_o)).weekday()
-			print (datetime.date.fromordinal(start_day_o))
         		
 			event_start_time = datetime.time(int("18"), int("00"))
         		event_start_date = datetime.date.fromordinal(start_day_o)
@@ -112,8 +106,8 @@ def main(argv):
 			i+=1
 			s+=1
 			week+=1
+			log.write(name + "\t\t"+ str(event_start_date) + newline)
 
-			email="herrlopes@gmail.com"
 
     			event = {
    				'summary': '[XRDS] Blogging Assigment for ' + name,
@@ -127,11 +121,7 @@ def main(argv):
 					'dateTime': event_end,
 					'timeZone': "America/Los_Angeles"
  			   	},
-				#attendees[].email <- get attendeed email here
 				"attendees": [
-    				  {
-      					"email": "anewkindofblue@gmail.com",
-    				  },
 				  {
       					"email": email,
     				  }
@@ -152,17 +142,16 @@ def main(argv):
  				  },
     			}
 
-    			#created_event = service.events().insert(calendarId=calendarID, body=event, sendNotifications="True").execute()
-    			#print created_event['id']
+    			created_event = service.events().insert(calendarId=calendarID, body=event, sendNotifications="True").execute()
+    			print created_event['id']
 	else:
 		print("SORRY: Please next time specify month using a number")
     
     else:
-	print("not adding to google cal") 
-	#quit
+	print("SORRY: not adding to google calendar") 
 
   except client.AccessTokenRefreshError:
-    print ("The credentials have been revoked or expired, please re-run"
+    print ("SORRY: The credentials have been revoked or expired, please re-run"
       "the application to re-authorize")
 
 if __name__ == '__main__':
